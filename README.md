@@ -79,3 +79,9 @@ GitHub Actions runs the tests on Node 22 and 24. Tests exercise authorization, v
 The hosted service isolates each account and its Live/Sandbox ledgers, uses hashed API keys with read-only or read/write scope, limits active keys to ten and expires them after 30 days. Keys can be revoked from the dashboard. `hosted/test/service.test.mjs` runs the actual service against SQLite using the production migration. Run `npm run test:hosted` on Node 22.13+ (Node 24 recommended).
 
 The hosted manifest intentionally contains no Site project ID. Use your own Sites project for a separate deployment. Sites must provide trusted identity headers; do not expose the hosted source behind an untrusted header-forwarding proxy.
+
+### Hosted access from non-browser clients
+
+Some hosting access policies can reject a client before the application runs (for example a non-JSON HTTP 403). For supported Site service access, the SDK accepts an optional third constructor argument `{siteAccessToken: process.env.SITES_ACCESS_TOKEN}`; the CLI reads `SITES_ACCESS_TOKEN`. This is separate from the scoped AgentMeter API key. Keep both in a secret manager and send the Site credential only to your own Site. Alternatively, use the authenticated AgentMeter ChatGPT plugin. The SDK never retries with a different browser identity.
+
+Production verification: signed-in dashboard writes, persistence after reload, deduplication and Live/Sandbox separation passed. Health and rejection of anonymous/spoofed identity requests passed through supported Site service access. A real externally issued AgentMeter API key has not yet been exercised against production.
