@@ -1,0 +1,2 @@
+import {UsageClient} from './sdk.mjs';const client=new UsageClient(process.env.PRODUCT_URL||'http://localhost:3000',process.env.PRODUCT_API_KEY||'');try{const result=process.argv[2]==='record'?await client.record(JSON.parse(process.argv[3]||'{}')):await client.summary();console.log(JSON.stringify(result,null,2));}catch(e){console.error(e.message);process.exitCode=1;}
+

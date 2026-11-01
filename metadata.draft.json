@@ -1,0 +1,13 @@
+{
+  "name": "AgentMeter",
+  "symbol": "AMTR",
+  "description": "A simple usage and cost ledger for AI agents. Record requests and tokens, then calculate costs using your own provider rates.",
+  "image": null,
+  "external_url": null,
+  "properties": {
+    "status": "draft",
+    "imageUploadRequired": true,
+    "publicWebsiteRequired": true,
+    "preview": "https://agent-fun-studio.btcmax.chatgpt.site/p/c20088a9-c701-48e2-acbc-6010b7563937"
+  }
+}

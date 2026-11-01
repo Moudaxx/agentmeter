@@ -1,0 +1,3 @@
+export function validateEvent(e){if(!e||typeof e.eventKey!=='string'||!e.eventKey||e.eventKey.length>100||typeof e.model!=='string'||!e.model||e.model.length>80)throw Error('eventKey and model required');for(const k of ['inputTokens','outputTokens','inputPrice','outputPrice'])if(typeof e[k]!=='number'||!Number.isFinite(e[k])||e[k]<0||e[k]>1e9)throw Error('Invalid '+k);if(!Number.isInteger(e.inputTokens)||!Number.isInteger(e.outputTokens))throw Error('Token counts must be integers');}
+export function cost(e){validateEvent(e);return (e.inputTokens*e.inputPrice+e.outputTokens*e.outputPrice)/1000000;}
+
