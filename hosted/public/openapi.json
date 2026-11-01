@@ -1,0 +1,139 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "AgentMeter usage API",
+    "version": "0.3.0",
+    "description": "Hosted per-account agent usage ledger. API keys select Live or Sandbox."
+  },
+  "servers": [
+    {
+      "url": "https://agentmeter.btcmax.chatgpt.site"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "UsageEvent": {
+        "type": "object",
+        "required": [
+          "eventKey",
+          "model",
+          "inputTokens",
+          "outputTokens",
+          "inputPrice",
+          "outputPrice"
+        ],
+        "properties": {
+          "eventKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "inputTokens": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "outputTokens": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "inputPrice": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000000,
+            "description": "USD per million input tokens"
+          },
+          "outputPrice": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000000,
+            "description": "USD per million output tokens"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "security": [],
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Healthy"
+          }
+        }
+      }
+    },
+    "/api/usage": {
+      "get": {
+        "summary": "Read recorded totals",
+        "responses": {
+          "200": {
+            "description": "Event count, costUsd, inputTokens and outputTokens"
+          },
+          "401": {
+            "description": "Invalid or missing bearer key"
+          }
+        }
+      },
+      "post": {
+        "summary": "Record an event once by eventKey",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsageEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recorded event or original duplicate event"
+          },
+          "400": {
+            "description": "Invalid body or event"
+          },
+          "401": {
+            "description": "Invalid or missing bearer key"
+          },
+          "413": {
+            "description": "Body exceeds 64 KiB"
+          }
+        }
+      }
+    },
+    "/api/events": {
+      "get": {
+        "summary": "Read up to 100 recent events in the key environment",
+        "responses": {
+          "200": {
+            "description": "Environment and recent events"
+          },
+          "401": {
+            "description": "Invalid API key"
+          }
+        }
+      }
+    }
+  }
+}

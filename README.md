@@ -11,7 +11,7 @@ Record AI agent usage and calculate cost using your own provider rates. A small,
 - JavaScript SDK, CLI and a basic JSON-over-HTTP MCP endpoint: `record_usage` and `usage_summary`.
 - A persistent single-process JSON ledger, Docker packaging and automated tests.
 
-The public website hosts the calculator only. The API in this repository requires a separate server deployment. It does not automatically collect provider usage, charge customers, manage wallets or trade tokens. MCP supports initialize and tools requests; SSE, sessions and OAuth are not implemented.
+The hosted service at https://agentmeter.btcmax.chatgpt.site now includes a per-account API, dashboard and durable storage. Open `/dashboard` to sign in and create a scoped API key. Hosted application source is in `hosted/`; the original single-process Node server at the repository root remains available for self-hosting. It does not automatically collect provider usage, charge customers, manage wallets or trade tokens. External MCP clients use `/api/mcp` with an AgentMeter key. The ChatGPT Site plugin uses `/mcp` with platform identity. The standalone root server is unchanged and does not implement OAuth.
 
 ## Run locally
 
@@ -73,3 +73,9 @@ No token contract or live trade is claimed in this release. `public/token.json` 
 
 GitHub Actions runs the tests on Node 22 and 24. Tests exercise authorization, validation, duplicate requests, persistence across restarts, public assets, SDK, CLI and MCP tools.
 
+
+## Hosted release v0.3
+
+The hosted service isolates each account and its Live/Sandbox ledgers, uses hashed API keys with read-only or read/write scope, limits active keys to ten and expires them after 30 days. Keys can be revoked from the dashboard. `hosted/test/service.test.mjs` runs the actual service against SQLite using the production migration. Run `npm run test:hosted` on Node 22.13+ (Node 24 recommended).
+
+The hosted manifest intentionally contains no Site project ID. Use your own Sites project for a separate deployment. Sites must provide trusted identity headers; do not expose the hosted source behind an untrusted header-forwarding proxy.
