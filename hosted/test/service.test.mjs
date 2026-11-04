@@ -82,3 +82,31 @@ test('MCP works with platform identity and scoped external keys',async()=>{const
  assert.equal(JSON.parse(read.data.result.content[0].text).events.length,1);
  assert.equal((await call('not-a-method')).data.error.code,-32601);
 }finally{f.close();}});
+
+test('onboarding check is repeatable and rejects a live key before writing', async () => {
+  const f = fixture();
+  try {
+    const { checkSandbox } = await import('../../examples/sandbox-check.mjs');
+    async function clientFor(environment) {
+      const { key } = await create(f, { environment });
+      return { async request(path, body) {
+        const response = await f.request(path, {
+          user: null, method: body ? 'POST' : 'GET', body,
+          headers: { Authorization: 'Bearer ' + key },
+        });
+        if (response.status >= 400) throw new Error(response.data.error);
+        return response.data;
+      } };
+    }
+    const client = await clientFor('sandbox');
+    await checkSandbox(client);
+    assert.equal((await checkSandbox(client)).retryDeduplicated, true);
+    assert.equal((await client.request('/api/usage')).events, 1);
+    assert.equal((await client.request('/api/usage')).costUsd, 0.3);
+    const live = await clientFor('live');
+    await assert.rejects(checkSandbox(live), /different environment/);
+    assert.equal((await live.request('/api/usage')).events, 0);
+  } finally {
+    f.close();
+  }
+});
