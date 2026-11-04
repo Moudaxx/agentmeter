@@ -13,6 +13,16 @@ Record AI agent usage and calculate cost using your own provider rates. A small,
 
 The hosted service at https://agentmeter.btcmax.chatgpt.site now includes a per-account API, dashboard and durable storage. Open `/dashboard` to sign in and create a scoped API key. Hosted application source is in `hosted/`; the original single-process Node server at the repository root remains available for self-hosting. It does not automatically collect provider usage, charge customers, manage wallets or trade tokens. External MCP clients use `/api/mcp` with an AgentMeter key. The ChatGPT Site plugin uses `/mcp` with platform identity. The standalone root server is unchanged and does not implement OAuth.
 
+## Verify your first hosted event
+
+Sign in to the [dashboard](https://agentmeter.btcmax.chatgpt.site/dashboard), create a Sandbox write key, and supply it through the `PRODUCT_API_KEY` environment variable. If your host requires a separate Site service credential, supply it through `SITES_ACCESS_TOKEN`. From the repository root on Node 22+, run:
+
+```sh
+node examples/sandbox-check.mjs
+```
+
+The check records a synthetic event with 100,000 input and 20,000 output tokens at illustrative rates of $2 and $5 per million. The estimated cost is $0.30. It sends the same event twice and verifies the duplicate response. Rerunning the check uses the same event ID. Open the Sandbox dashboard to inspect the record. This example makes no model call.
+
 ## Run locally
 
 Requires Node.js 22 or later. No package installation is needed.
